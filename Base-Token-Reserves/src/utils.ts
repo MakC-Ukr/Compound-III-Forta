@@ -1,6 +1,6 @@
 import { Finding, FindingSeverity, FindingType } from "forta-agent";
 
-export const COMET_ABI = ["function getReserves() override public view returns (int)"];
+export const COMET_ABI = ["function getReserves() public view returns (int)"];
 
 export const MAINNET_COMET = "0xc3d688B66703497DAA19211EEdff47f25384cdc3";
 export const GOERLI_COMET = "0xc3d688B66703497DAA19211EEdff47f25384cdc3";
