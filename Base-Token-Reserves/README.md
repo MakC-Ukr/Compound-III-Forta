@@ -1,33 +1,20 @@
-# Large Relays detection bot
+# Base Token Reserves monitoring bot
 
 ## Description
 
-This bot monitors for large relays (with configurable thresholds) made with [Across v2 bridge](https://across.to/) - a multichain bridge built on the [UMA protocol](https://umaproject.org/) as its source of on-chain data validation. For more details refer [here](https://discourse.umaproject.org/t/forta-monitors-across-v2-request-for-proposals/1569).
-
+This bot monitors for the amount of base token reserves stored in the [Compound](https://compound.finance/) III's `Comet` (contract)[https://etherscan.io/address/0xc3d688B66703497DAA19211EEdff47f25384cdc3].
 ## Supported Chains
 - Mainnet
-- Optimism
-- Arbitrum
-- Polygon
   
 ## Alerts
 
-- UMA-7
-  - Fired whenever a `FilledRelay` event is emitted from the `SpokePool` with an amount of tokens greater than or equal to the thresholds given in `./chainThresholds.ts`
-  - Severity is always set to "info" 
+- COMP-1
+  - Fired whenever the amount of base token reserves on the COmet contract goes below the thresholds set in utils.ts
+  - Severity is always set to "low" 
   - Type is always set to "info"
   - Metadata :
-      <!-- - `amount`: amount that the depositor wished to relay
-      - `destinationToken`: relay destination chain token address
-      - `originChainId`: relay origination chain ID
-      - `destinationChainId`: relay destination chain ID
-      - `depositor`: wallet address that made the deposit on the origin chain
-      - `recipient`: recipient wallet address on the destination chain
-      - `isSlowRelay`: boolean value indicating whether the relay was a slow relay -->
-
-## Configuring the token amount thresholds for specific chains
-
-In order to change the token amount thresholds, please add/remove the token addresses in the `./src/chainThresholds.ts` file or change the thresholds amounts for specific chains. Please note that the currently added tokens and corresponding amounts are tentative.
+    - actualReserves - the actual amount of base token reserves
+    - targetReserves - the target amount of base token reserves
 
 ## Test Data
 
