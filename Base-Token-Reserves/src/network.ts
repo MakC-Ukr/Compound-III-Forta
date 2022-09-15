@@ -1,10 +1,11 @@
+import { BigNumber } from "ethers";
 import { Network } from "forta-agent";
 import { MAINNET_TARGET_RESERVES, GOERLI_TARGET_RESERVES } from "./utils";
 
 import { MAINNET_COMET, GOERLI_COMET } from "./utils";
 
 export interface NetworkDataInterface {
-  targetReserves: string;
+  targetReserves: BigNumber;
   cometAddr: string;
 }
 

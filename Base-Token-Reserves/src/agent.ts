@@ -1,17 +1,8 @@
-import {
-  Finding,
-  HandleTransaction,
-  ethers,
-  Initialize,
-  TransactionEvent,
-  getEthersProvider,
-  HandleBlock,
-  BlockEvent,
-  getJsonRpcUrl,
-} from "forta-agent";
+import { Finding, ethers, Initialize, getEthersProvider, HandleBlock, BlockEvent } from "forta-agent";
 import { NetworkManager } from "forta-agent-tools";
 import { COMET_ABI, getFindingInstance } from "./utils";
 import { NetworkDataInterface, NM_DATA } from "./network";
+import { BigNumber } from "ethers";
 
 const networkManager = new NetworkManager(NM_DATA, 1);
 
@@ -24,18 +15,19 @@ export function provideInitialize(
   };
 }
 
-export function provideHandleBlock(networkManager: NetworkManager<NetworkDataInterface>, provider: ethers.providers.Provider): HandleBlock {
-  // let provider = new ethers.providers.JsonRpcProvider(getJsonRpcUrl());
+export function provideHandleBlock(
+  networkManager: NetworkManager<NetworkDataInterface>,
+  provider: ethers.providers.Provider
+): HandleBlock {
   let cometContract = new ethers.Contract(networkManager.get("cometAddr"), COMET_ABI, provider);
 
-  return async (_: BlockEvent) => {
+  return async (blockEvent: BlockEvent) => {
     const findings: Finding[] = [];
-    console.log(cometContract.address);
-    console.log("Promise:", (await cometContract.getReserves()));
-    const tokenReserves: string = (await cometContract.getReserves()).toString();
-    console.log(tokenReserves);
-    if (tokenReserves < networkManager.get("targetReserves")) {
-      findings.push(getFindingInstance(tokenReserves, networkManager.get("targetReserves")));
+    const tokenReserves: BigNumber = BigNumber.from(
+      await cometContract.getReserves({ blockTag: blockEvent.blockNumber })
+    );
+    if (tokenReserves.lt(networkManager.get("targetReserves"))) {
+      findings.push(getFindingInstance(tokenReserves.toString(), networkManager.get("targetReserves").toString()));
     }
     return findings;
   };
