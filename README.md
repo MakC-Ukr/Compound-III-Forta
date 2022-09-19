@@ -12,11 +12,11 @@ Compound Finance's v3 of the protocol issues overcollateralized loans of a singl
 
 ## Proposed Solution:
 - COMP01: Base Token Reserves
-    - Detailed instructions
-    - on how to build bot
-- COMP02: Bot Name
-    - Detailed instructions
-    - on how to build bot
-    - COMP03: Bot Name
+Fetch the amount returned by `getReserves()` function and compare if the amount goes below a preset target reserve amount. 
+
+- COMP02: Governance Approve
+Listen for function `approveThis` being called from the [Comet](https://github.com/compound-finance/comet/blob/0f1221967149115f50a09681eea9580879ee7720/contracts/Comet.sol#L1294) contract  
+
+- COMP03: Bot Name
     - Detailed instructions
     - on how to build bot
