@@ -1,60 +1,69 @@
-import { Finding, HandleTransaction, TransactionEvent, Trace, FindingSeverity } from "forta-agent";
-import { Counter, reentracyLevel, createFinding } from "./agent.utils";
+import {
+  Finding,
+  HandleTransaction,
+  TransactionEvent,
+  ethers,
+  Initialize,
+  getEthersProvider,
+} from "forta-agent";
+import { NetworkDataInterface, NM_DATA } from "./network";
+import { NetworkManager } from "forta-agent-tools";
+import { getFindingInstance, MONITORED_FUNCS } from "./utils";
 
-export const thresholds: [number, FindingSeverity][] = [
-  [3, FindingSeverity.Info],
-  [5, FindingSeverity.Low],
-  [7, FindingSeverity.Medium],
-  [9, FindingSeverity.High],
-  [11, FindingSeverity.Critical],
-];
+const networkManager = new NetworkManager(NM_DATA, 1);
+export function provideInitialize(
+  networkManager: NetworkManager<NetworkDataInterface>,
+  provider: ethers.providers.Provider
+): Initialize {
+  return async () => {
+    await networkManager.init(provider);
+  };
+}
 
-const handleTransaction: HandleTransaction = async (txEvent: TransactionEvent) => {
-  const findings: Finding[] = [];
+export function provideHandleTransaction(
+  networkManager: NetworkManager<NetworkDataInterface>,
+  monitoredFuncs: string[]
+): HandleTransaction {
+  return async (txEvent: TransactionEvent) => {
+    const findings: Finding[] = [];
 
-  const maxReentrancyNumber: Counter = {};
-  const currentCounter: Counter = {};
-
-  // Add the addresses to the counters
-  const addresses: string[] = [];
-  txEvent.traces.forEach((trace: Trace) => {
-    addresses.push(trace.action.to);
-  });
-  addresses.forEach((addr: string) => {
-    maxReentrancyNumber[addr] = 1;
-    currentCounter[addr] = 0;
-  });
-
-  const stack: string[] = [];
-
-  // Review the traces stack
-  txEvent.traces.forEach((trace: Trace) => {
-    const curStack: number[] = trace.traceAddress;
-    while (stack.length > curStack.length) {
-      // @ts-ignore
-      const last: string = stack.pop();
-      currentCounter[last] -= 1;
+    for (let i = 0; i < txEvent.traces.length; i++) {
+      const selector = txEvent.traces[i].action.input.slice(0, 10);
+      if (
+        networkManager.get("cometAddr") === txEvent.traces[i].action.to.toLowerCase() &&
+        monitoredFuncs.includes(selector)
+      ) {
+        const depth = txEvent.traces[i].traceAddress.length;
+        let cardinality = 1;
+        let j = i + 1;
+        for (; j < txEvent.traces.length; j++) {
+          if (txEvent.traces[j].traceAddress.length <= depth) {
+            break;
+          }
+          if (
+            txEvent.traces[j].action.to.toLowerCase() === txEvent.traces[i].action.to.toLowerCase() &&
+            monitoredFuncs.includes(txEvent.traces[j].action.input.slice(0, 10))
+          ) {
+            findings.push(
+              getFindingInstance(
+                cardinality.toString()
+              )
+            );
+          }
+          cardinality+=1;
+        }
+        i = j - 1;
+      }
     }
-    const to: string = trace.action.to;
-    currentCounter[to] += 1;
-    maxReentrancyNumber[to] = Math.max(maxReentrancyNumber[to], currentCounter[to]);
-    stack.push(to);
-  });
 
-  // Create findings if needed
-  for (const addr in maxReentrancyNumber) {
-    const maxCount: number = maxReentrancyNumber[addr];
-    const [report, severity] = reentracyLevel(maxCount, thresholds);
-    if (report) findings.push(createFinding(addr, maxCount, severity));
-  }
+    return findings;
+  };
+}
 
-  return findings;
+export default {
+  initialize: provideInitialize(networkManager, getEthersProvider()),
+  handleTransaction: provideHandleTransaction(networkManager, MONITORED_FUNCS),
 };
-
-// export default {
-//   handleTransaction,
-// };
-
 
 // import { getEthersProvider } from "forta-agent";
 // import { HandleTransaction, TransactionEvent, Finding } from "forta-agent";
