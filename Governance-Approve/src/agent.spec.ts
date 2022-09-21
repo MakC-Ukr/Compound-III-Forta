@@ -34,7 +34,7 @@ function testGetFindingInstance(approvedAddress: string, erc20: string, amount: 
   });
 }
 // Test cases
-describe("Base Token Reserves monitoring test suite ", () => {
+describe("Governance approve monitoring test suite ", () => {
   it("returns empty findings if approveThis is not called on Comet contract", async () => {
     const txEvent: TestTransactionEvent = new TestTransactionEvent();
     const findings: Finding[] = await handleTransaction(txEvent);
