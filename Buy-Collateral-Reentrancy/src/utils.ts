@@ -5,6 +5,9 @@ export const GOERLI_COMET = "0x2801604060f3A819730Aa022b42f6bC005136492";
 export const MONITORED_FUNCS = [
   "function buyCollateral(address asset, uint minAmount, uint baseAmount, address recipient)",
 ];
+export const MONITORED_FUNC_SELECTORS = [
+  "0xe4e6e779", // selector for buyCollateral
+];
 
 export function getFindingInstance(cardinality: string): Finding {
   return Finding.fromObject({

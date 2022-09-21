@@ -14,7 +14,7 @@ import { MockEthersProvider, TestBlockEvent, TestTransactionEvent } from "forta-
 import { provideHandleTransaction } from "./agent";
 import { createAddress, NetworkManager } from "forta-agent-tools";
 import { NetworkDataInterface } from "./network";
-import { MONITORED_FUNCS } from "./utils";
+import { MONITORED_FUNCS, MONITORED_FUNC_SELECTORS } from "./utils";
 import { Interface } from "ethers/lib/utils";
 import { BigNumber, Transaction } from "ethers";
 
@@ -29,7 +29,7 @@ const MOCK_NM_DATA: Record<number, NetworkDataInterface> = {
   },
 };
 const networkManagerTest = new NetworkManager(MOCK_NM_DATA, TEST_NETWORK_ID);
-let handleTransaction: HandleTransaction = provideHandleTransaction(networkManagerTest, MONITORED_FUNCS);
+let handleTransaction: HandleTransaction = provideHandleTransaction(networkManagerTest, MONITORED_FUNC_SELECTORS);
 
 function testGetFindingInstance(cardinality: string): Finding {
   return Finding.fromObject({
@@ -65,17 +65,34 @@ describe("buyCollateral reentrancy detection test suite ", () => {
   });
 
   it("returns empty findings for a single buyCollateral call", async () => {
-    const txEvent: TestTransactionEvent = new TestTransactionEvent().addTraces({
-      from: createAddress("0x1"),
+    const data = {
+      from: MOCK_EOA,
       to: MOCK_COMET_ADDR,
-      function: iface.getFunction("buyCollateral"),
-      arguments: [createAddress("0x1234"), "999", "223", createAddress("0x4321")],
-    });
-    const findings: Finding[] = await handleTransaction(txEvent);
+    };
+
+    const traces = [
+      createTrace(
+        MOCK_EOA,
+        [],
+        MOCK_COMET_ADDR,
+        iface.encodeFunctionData("buyCollateral(address,uint,uint,address)", [
+          createAddress("0x1234"),
+          "111",
+          "222",
+          createAddress("0x4321"),
+        ])
+      ),
+    ];
+
+    const txEvent: TransactionEvent = createTransactionEvent({
+      transaction: data as Transaction,
+      traces: traces,
+    } as any);
+    const findings = await handleTransaction(txEvent);
     expect(findings).toStrictEqual([]);
   });
 
-  it("returns a finding if a reentrancy occurs in the buyCollateral function", async () => {
+  it("returns a finding if a reentrancy occurs in the buyCollateral function in the first subtrace", async () => {
     const data = {
       from: MOCK_EOA,
       to: MOCK_COMET_ADDR,
@@ -95,7 +112,7 @@ describe("buyCollateral reentrancy detection test suite ", () => {
       ),
       createTrace(
         MOCK_EOA,
-        [],
+        [0],
         MOCK_COMET_ADDR,
         iface.encodeFunctionData("buyCollateral(address,uint,uint,address)", [
           createAddress("0x1234"),
@@ -111,6 +128,6 @@ describe("buyCollateral reentrancy detection test suite ", () => {
       traces: traces,
     } as any);
     const findings = await handleTransaction(txEvent);
-    expect(findings).toStrictEqual([]);
+    expect(findings).toStrictEqual([testGetFindingInstance("1")]);
   });
 });
