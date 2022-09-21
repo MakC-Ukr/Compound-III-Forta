@@ -1,11 +1,4 @@
-import {
-  Finding,
-  HandleTransaction,
-  TransactionEvent,
-  ethers,
-  Initialize,
-  getEthersProvider,
-} from "forta-agent";
+import { Finding, HandleTransaction, TransactionEvent, ethers, Initialize, getEthersProvider } from "forta-agent";
 import { NetworkDataInterface, NM_DATA } from "./network";
 import { NetworkManager } from "forta-agent-tools";
 import { getFindingInstance, MONITORED_FUNCS } from "./utils";
@@ -43,13 +36,9 @@ export function provideHandleTransaction(
             txEvent.traces[j].action.to.toLowerCase() === txEvent.traces[i].action.to.toLowerCase() &&
             monitoredFuncs.includes(txEvent.traces[j].action.input.slice(0, 10))
           ) {
-            findings.push(
-              getFindingInstance(
-                cardinality.toString()
-              )
-            );
+            findings.push(getFindingInstance(cardinality.toString()));
           }
-          cardinality+=1;
+          cardinality += 1;
         }
         i = j - 1;
       }

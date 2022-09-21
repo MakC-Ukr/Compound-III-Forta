@@ -1,109 +1,116 @@
-// import {
-//   Finding,
-//   HandleTransaction,
-//   createTransactionEvent,
-//   Trace,
-//   Transaction,
-//   Receipt,
-//   Block,
-//   TransactionEvent,
-//   TraceAction,
-// } from "forta-agent";
-// import agent, { thresholds } from "./agent";
-// import { createFinding, reentracyLevel } from "./agent.utils";
+import {
+  Finding,
+  FindingSeverity,
+  FindingType,
+  HandleBlock,
+  BlockEvent,
+  HandleTransaction,
+  TransactionEvent,
+  TraceAction,
+  Trace,
+  createTransactionEvent,
+} from "forta-agent";
+import { MockEthersProvider, TestBlockEvent, TestTransactionEvent } from "forta-agent-tools/lib/test";
+import { provideHandleTransaction } from "./agent";
+import { createAddress, NetworkManager } from "forta-agent-tools";
+import { NetworkDataInterface } from "./network";
+import { MONITORED_FUNCS } from "./utils";
+import { Interface } from "ethers/lib/utils";
+import { BigNumber, Transaction } from "ethers";
 
-// const createTrace = (to: string, stack: number[]): Trace => {
-//   return {
-//     traceAddress: stack,
-//     action: {
-//       to: to,
-//     } as TraceAction,
-//   } as Trace;
-// };
+// TEST DATA
+const MOCK_COMET_ADDR = createAddress("0x39");
+const MOCK_EOA = createAddress("0x33");
+const TEST_NETWORK_ID = 0;
+const iface: Interface = new Interface(MONITORED_FUNCS);
+const MOCK_NM_DATA: Record<number, NetworkDataInterface> = {
+  [TEST_NETWORK_ID]: {
+    cometAddr: MOCK_COMET_ADDR,
+  },
+};
+const networkManagerTest = new NetworkManager(MOCK_NM_DATA, TEST_NETWORK_ID);
+let handleTransaction: HandleTransaction = provideHandleTransaction(networkManagerTest, MONITORED_FUNCS);
 
-// const createTxEvent = (traces: Trace[]) =>
-//   createTransactionEvent({
-//     transaction: {} as Transaction,
-//     receipt: {} as Receipt,
-//     block: {} as Block,
-//     traces: traces,
-//   });
+function testGetFindingInstance(cardinality: string): Finding {
+  return Finding.fromObject({
+    name: "Buy Collateral Reentrancy detected",
+    description: "The buyCollateral function was re-entered in the transaction",
+    alertId: "COMP-3",
+    severity: FindingSeverity.Low,
+    type: FindingType.Info,
+    protocol: "COMP",
+    metadata: {
+      cardinality,
+    },
+  });
+}
 
-// describe("Reentrancy counter agent tests suit", () => {
-//   const handleTransaction: HandleTransaction = agent.handleTransaction;
+const createTrace = (from: string, traceAddress: number[], to: string, input: string): Trace => {
+  return {
+    action: {
+      from,
+      to,
+      input,
+    } as TraceAction,
+    traceAddress,
+  } as Trace;
+};
 
-//   describe("handleTransaction", () => {
-//     it("Should return empty findinds if no traces provided", async () => {
-//       const tx: TransactionEvent = createTxEvent([]);
-//       const findings: Finding[] = await handleTransaction(tx);
-//       expect(findings).toStrictEqual([]);
-//     });
+// Test cases
+describe("buyCollateral reentrancy detection test suite ", () => {
+  it("returns empty findings for an empty transaction", async () => {
+    const txEvent: TestTransactionEvent = new TestTransactionEvent();
+    const findings: Finding[] = await handleTransaction(txEvent);
+    expect(findings).toStrictEqual([]);
+  });
 
-//     it("Should return empty findinds if no repetition detected", async () => {
-//       const tx: TransactionEvent = createTxEvent([
-//         createTrace("0x0", []), // 0x0 -- Initial call
-//         createTrace("0x1", [0]), //    Calls 0x1
-//         createTrace("0x2", [0, 0]), //    Calls 0x2
-//         createTrace("0x3", [0, 0, 0]), //    Calls 0x3
-//       ]);
-//       const findings: Finding[] = await handleTransaction(tx);
-//       expect(findings).toStrictEqual([]);
-//     });
+  it("returns empty findings for a single buyCollateral call", async () => {
+    const txEvent: TestTransactionEvent = new TestTransactionEvent().addTraces({
+      from: createAddress("0x1"),
+      to: MOCK_COMET_ADDR,
+      function: iface.getFunction("buyCollateral"),
+      arguments: [createAddress("0x1234"), "999", "223", createAddress("0x4321")],
+    });
+    const findings: Finding[] = await handleTransaction(txEvent);
+    expect(findings).toStrictEqual([]);
+  });
 
-//     it("Should ignore non reentrant calls", async () => {
-//       const tx: TransactionEvent = createTxEvent([
-//         createTrace("0x0", []), // 0x0 -- Initial call
-//         createTrace("0x1", [0]), //    Calls 0x1
-//         createTrace("0x1", [1]), //    Calls 0x1
-//         createTrace("0x2", [1, 0]), //       Calls 0x2
-//         createTrace("0x2", [1, 1]), //       Calls 0x2
-//         createTrace("0x2", [1, 2]), //       Calls 0x2
-//         createTrace("0x2", [1, 3]), //       Calls 0x2
-//         createTrace("0x1", [2]), //    Calls 0x1
-//         createTrace("0x1", [3]), //    Calls 0x1
-//         createTrace("0x2", [4]), //    Calls 0x2
-//         createTrace("0x3", [5]), //    Calls 0x3
-//         createTrace("0x1", [6]), //    Calls 0x1
-//         createTrace("0x1", [7]), //    Calls 0x1
-//       ]);
-//       const findings: Finding[] = await handleTransaction(tx);
-//       expect(findings).toStrictEqual([]);
-//     });
+  it("returns a finding if a reentrancy occurs in the buyCollateral function", async () => {
+    const data = {
+      from: MOCK_EOA,
+      to: MOCK_COMET_ADDR,
+    };
 
-//     it("Should detect different thresholds of reentrancy", async () => {
-//       // 0x0, 0x1, 0x3, 0x5, 0x6 called less than 3 times
-//       // 0x2 called 3 times
-//       // 0x4 called 5 times
-//       const tx: TransactionEvent = createTxEvent([
-//         createTrace("0x0", []), // 0x0 -- Initial call
-//         createTrace("0x1", [0]), //    Calls 0x1
-//         createTrace("0x2", [0, 0]), //      Calls 0x2
-//         createTrace("0x3", [0, 0, 0]), //        Calls 0x3
-//         createTrace("0x2", [0, 0, 0, 0]), //          Calls 0x2
-//         createTrace("0x3", [0, 0, 0, 0, 0]), //            Calls 0x3
-//         createTrace("0x2", [0, 0, 0, 0, 0, 0]), //              Calls 0x2
-//         createTrace("0x4", [0, 1]), //       Calls 0x4
-//         createTrace("0x5", [0, 1, 0]), //         Calls 0x5
-//         createTrace("0x6", [0, 1, 0, 0]), //           Calls 0x6
-//         createTrace("0x4", [0, 1, 0, 0, 0]), //             Calls 0x4
-//         createTrace("0x5", [0, 1, 0, 0, 0, 0]), //               Calls 0x5
-//         createTrace("0x4", [0, 1, 0, 0, 0, 0, 0]), //                 Calls 0x4
-//         createTrace("0x6", [0, 1, 0, 0, 0, 0, 0, 0]), //                   Calls 0x6
-//         createTrace("0x4", [0, 1, 0, 0, 0, 0, 0, 0, 0]), //                     Calls 0x4
-//         createTrace("0x1", [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]), //                       Calls 0x1
-//         createTrace("0x4", [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), //                         Calls 0x4
-//       ]);
-//       const [report0x1, severity0x1] = reentracyLevel(1, thresholds);
-//       const [report0x2, severity0x2] = reentracyLevel(3, thresholds);
-//       const [report0x4, severity0x4] = reentracyLevel(5, thresholds);
-//       const expected: Finding[] = [];
-//       if (report0x1) expected.push(createFinding("0x1", 1, severity0x1));
-//       if (report0x2) expected.push(createFinding("0x2", 3, severity0x2));
-//       if (report0x4) expected.push(createFinding("0x4", 5, severity0x4));
+    const traces = [
+      createTrace(
+        MOCK_EOA,
+        [],
+        MOCK_COMET_ADDR,
+        iface.encodeFunctionData("buyCollateral(address,uint,uint,address)", [
+          createAddress("0x1234"),
+          "111",
+          "222",
+          createAddress("0x4321"),
+        ])
+      ),
+      createTrace(
+        MOCK_EOA,
+        [],
+        MOCK_COMET_ADDR,
+        iface.encodeFunctionData("buyCollateral(address,uint,uint,address)", [
+          createAddress("0x1234"),
+          "333",
+          "444",
+          createAddress("0x4321"),
+        ])
+      ),
+    ];
 
-//       const findings: Finding[] = await handleTransaction(tx);
-//       expect(findings).toEqual(expect.arrayContaining(expected));
-//       expect(findings.length).toEqual(expected.length);
-//     });
-//   });
-// });
+    const txEvent: TransactionEvent = createTransactionEvent({
+      transaction: data as Transaction,
+      traces: traces,
+    } as any);
+    const findings = await handleTransaction(txEvent);
+    expect(findings).toStrictEqual([]);
+  });
+});

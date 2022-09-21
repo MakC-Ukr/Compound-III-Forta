@@ -15,7 +15,7 @@ export function getFindingInstance(cardinality: string): Finding {
     type: FindingType.Info,
     protocol: "COMP",
     metadata: {
-      cardinality
+      cardinality,
     },
   });
 }
