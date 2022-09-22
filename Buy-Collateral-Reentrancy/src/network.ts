@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers";
 import { Network } from "forta-agent";
 
 import { MAINNET_COMET, GOERLI_COMET } from "./utils";
