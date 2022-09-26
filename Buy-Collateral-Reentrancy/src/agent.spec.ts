@@ -34,8 +34,8 @@ function testGetFindingInstance(cardinality: string): Finding {
     name: "Buy Collateral Reentrancy detected",
     description: "The buyCollateral function was re-entered in the transaction",
     alertId: "COMP-3",
-    severity: FindingSeverity.Low,
-    type: FindingType.Info,
+    severity: FindingSeverity.Medium,
+    type: FindingType.Suspicious,
     protocol: "COMP",
     metadata: {
       cardinality,

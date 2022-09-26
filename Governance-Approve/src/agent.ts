@@ -19,7 +19,6 @@ export function provideHandleTransaction(networkManager: NetworkManager<NetworkD
     const findings: Finding[] = [];
     const parsedFunctions = txEvent.filterFunction(APPROVE_FUNC, networkManager.get("cometAddr"));
     parsedFunctions.forEach((parsedFunction) => {
-      // create a finding
       findings.push(
         getFindingInstance(
           parsedFunction.args.manager,

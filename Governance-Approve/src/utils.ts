@@ -11,8 +11,8 @@ export function getFindingInstance(approvedAddress: string, erc20: string, amoun
     name: "Governance Approved Tokens",
     description: "The governance contract has approved an address to transfer assets out of the protocol",
     alertId: "COMP-2",
-    severity: FindingSeverity.Low,
-    type: FindingType.Info,
+    severity: FindingSeverity.Medium,
+    type: FindingType.Suspicious,
     protocol: "COMP",
     metadata: {
       approvedAddress,

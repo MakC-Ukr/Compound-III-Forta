@@ -10,22 +10,15 @@ This bot monitors for the governance contract calling the `approveThis` function
 
 - COMP-2
   - Fired whenever the amount of base token reserves on the COmet contract goes below the thresholds set in utils.ts
-  - Severity is always set to "low" 
-  - Type is always set to "info"
-  <!-- - Metadata :
-    - actualReserves - the actual amount of base token reserves
-    - targetReserves - the target amount of base token reserves -->
+  - Severity is always set to "medium" 
+  - Type is always set to "suspicious"
+  - Metadata :
+    - approvedAddress - the address that was approved to spend the tokens
+    - erc20 - the erc20 token address
+    - amount - amount approved
 
 ## Test Data
 
-The bot behaviour can be verified with the following transactions by running `npm run block <TX_HASH>`:
-
-### Ethereum Mainnet
-<!-- - [0x51fa8f3cabfe44033bfd4729a60eb6d8c57c54a3097463207e33e218b9a91d35](https://etherscan.io/tx/0x51fa8f3cabfe44033bfd4729a60eb6d8c57c54a3097463207e33e218b9a91d35) (1 finding - `FilledRelay` was emitted 1 time with an amount of 3.87 WETH relayed)
-- [0x396c794b8a41e6e365a0fc52235739c6e82751b977d3f803d622c9463713e1d9](https://etherscan.io/tx/0x396c794b8a41e6e365a0fc52235739c6e82751b977d3f803d622c9463713e1d9) (2 findings - `FilledRelay` was emitted 2 times with different parameters) -->
-
- ### Goerli Testnet (PoC)
-
-In order to verify the Proof of Concept transactions on Goerli the appropriate `jsonRpcUrl` shall be set in `./forta.config.json`
+The bot behaviour can be verified with the Proof of Concept transactions on Goerli (the appropriate `jsonRpcUrl` shall be set in `./forta.config.json`)
 
 - [0x6e99a3c432944e112ed1d35fabc55ded983f34f565bf97fcb2cc093a89d298a7](https://goerli.etherscan.io/tx/0x6e99a3c432944e112ed1d35fabc55ded983f34f565bf97fcb2cc093a89d298a7) (1 finding - `approveThis` was called on the Goerli Comet PoC contract)
