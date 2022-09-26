@@ -7,3 +7,7 @@ governance-approve
 
 buy-collateral-reentrancy
 1. Add mainnet examples to readme
+2. Readme complete
+
+upgrade-proxy
+metadata should retun the address of the new proxy

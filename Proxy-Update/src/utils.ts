@@ -1,0 +1,3 @@
+export const UPGRADE_EVENT_SIGNATURE = "event Upgraded(address)";
+export const MAINNET_COMET = "0xc3d688B66703497DAA19211EEdff47f25384cdc3";
+export const GOERLI_COMET = "0x2801604060f3A819730Aa022b42f6bC005136492";
