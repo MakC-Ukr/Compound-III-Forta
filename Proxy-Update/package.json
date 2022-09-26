@@ -1,7 +1,8 @@
 {
-  "name": "forta-agent-starter",
+  "name": "proxy-update",
   "version": "0.0.1",
-  "description": "Forta Agent Typescript starter project",
+  "description": "Forta Agent that monitors for chaige in Comet contract's implementation",
+  "repository": "https://github.com/MakC-Ukr/compound-forta-bots",
   "chainIds": [
     1
   ],

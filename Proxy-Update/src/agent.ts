@@ -29,26 +29,30 @@ export function provideHandleTransaction(
   return async (txEvent: TransactionEvent) => {
     const findings: Finding[] = [];
 
-    const upgradeEvents = txEvent.filterLog(
-      UPGRADE_EVENT_SIGNATURE,
-      networkManager.get("cometAddr")
-    );
+    const upgradeEvents = txEvent.filterLog(UPGRADE_EVENT_SIGNATURE, [
+      networkManager.get("cometAddr"),
+      networkManager.get("configuratorAddr"),
+    ]);
 
     if (!upgradeEvents.length) return findings;
-
-    findings.push(
-      Finding.fromObject({
-        name: "Comet Proxy Upgrade",
-        description: `Comet Proxy contract updated`,
-        alertId: "COMP-4",
-        type: FindingType.Suspicious,
-        severity: FindingSeverity.High,
-        metadata: {
-          // proxy: ""
-        },
-      })
-    );
-
+    upgradeEvents.forEach((event) => {
+      const _newImpl = event.args[0];
+      findings.push(
+        Finding.fromObject({
+          name: "Compound Proxy Upgrade",
+          description: `Compound Proxy contract updated`,
+          alertId: "COMP-4",
+          type: FindingType.Info,
+          severity: FindingSeverity.High,
+          metadata: {
+            newImplementation: _newImpl,
+            isComet: (
+              event.address === networkManager.get("cometAddr")
+            ).toString(),
+          },
+        })
+      );
+    });
     return findings;
   };
 }
