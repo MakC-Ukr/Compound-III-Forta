@@ -20,13 +20,11 @@ export function provideHandleTransaction(
   return async (txEvent: TransactionEvent) => {
     const findings: Finding[] = [];
     for (let i = 0; i < txEvent.traces.length; i++) {
-      console.log("i: ", txEvent.traces[i]);
       const selector = txEvent.traces[i].action.input.slice(0, 10);
       if (
         networkManager.get("cometAddr") === txEvent.traces[i].action.to.toLowerCase() &&
         monitoredFuncSelectors.includes(selector)
       ) {
-        console.log("j: ", txEvent.traces[i]);
         const depth = txEvent.traces[i].traceAddress.length;
         let cardinality = 1;
         let j = i + 1;
