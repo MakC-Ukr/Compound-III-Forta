@@ -19,3 +19,6 @@ Listen for function `approveThis` being called from the [Comet](https://github.c
 
 - COMP03: Buy Collateral Re-entrancy
 Listen for multiple re-entrancies into the `buyCollateral` function. We can monitor for reentrancy by looking at the transaction event traces as described [here](https://github.com/NethermindEth/Forta-Agents/blob/a5bd20303669d5a1d0e2163c43904627f8999749/reentrancy-counter/src/agent.utils.ts). 
+
+-COMP04: Proxy Update
+Listen for the `Updated` event emitted by standard OZ's `TransparentUpgradableProxy` [implementation](https://github.com/compound-finance/comet/blob/0f1221967149115f50a09681eea9580879ee7720/contracts/vendor/proxy/transparent/TransparentUpgradeableProxy.sol).

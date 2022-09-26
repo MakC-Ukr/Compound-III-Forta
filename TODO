@@ -11,4 +11,4 @@ buy-collateral-reentrancy
 
 upgrade-proxy
 1. metadata should retun the address of the new proxy
-2. Documentation complete
+2. readme mainnet examples
