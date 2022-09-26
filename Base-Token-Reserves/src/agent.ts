@@ -3,8 +3,7 @@ import { NetworkManager } from "forta-agent-tools";
 import { COMET_ABI, getFindingInstance } from "./utils";
 import { NetworkDataInterface, NM_DATA } from "./network";
 import { BigNumber } from "ethers";
-
-const networkManager = new NetworkManager(NM_DATA, 1);
+const networkManagerCurr = new NetworkManager(NM_DATA);
 
 export function provideInitialize(
   networkManager: NetworkManager<NetworkDataInterface>,
@@ -19,8 +18,8 @@ export function provideHandleBlock(
   networkManager: NetworkManager<NetworkDataInterface>,
   provider: ethers.providers.Provider
 ): HandleBlock {
+  console.log(networkManager.get("cometAddr"));
   let cometContract = new ethers.Contract(networkManager.get("cometAddr"), COMET_ABI, provider);
-
   return async (blockEvent: BlockEvent) => {
     const findings: Finding[] = [];
     const tokenReserves: BigNumber = BigNumber.from(
@@ -34,6 +33,6 @@ export function provideHandleBlock(
 }
 
 export default {
-  initialize: provideInitialize(networkManager, getEthersProvider()),
-  handleBlock: provideHandleBlock(networkManager, getEthersProvider()),
+  initialize: provideInitialize(networkManagerCurr, getEthersProvider()),
+  handleBlock: provideHandleBlock(networkManagerCurr, getEthersProvider()),
 };

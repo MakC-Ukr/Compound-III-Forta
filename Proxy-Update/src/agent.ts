@@ -32,11 +32,7 @@ export function provideHandleTransaction(
       networkManager.get("cometAddr"),
       networkManager.get("configuratorAddr"),
     ]);
-    // console.log('networkManager.get("cometAddr")', networkManager.get("cometAddr"));
-    // console.log('networkManager.get("configuratorAddr")', networkManager.get("configuratorAddr"));
-    console.log("upgradeEvents", upgradeEvents);
     if (!upgradeEvents.length) return findings;
-    console.log("SIDHU");
     upgradeEvents.forEach((event) => {
       const _newImpl = event.args[0];
       findings.push(

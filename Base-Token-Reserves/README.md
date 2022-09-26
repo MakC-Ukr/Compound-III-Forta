@@ -18,14 +18,6 @@ This bot monitors for the amount of base token reserves stored in the [Compound]
 
 ## Test Data
 
-The bot behaviour can be verified with the following transactions by running `npm run block <TX_HASH>`:
-
-### Ethereum Mainnet
-<!-- - [0x51fa8f3cabfe44033bfd4729a60eb6d8c57c54a3097463207e33e218b9a91d35](https://etherscan.io/tx/0x51fa8f3cabfe44033bfd4729a60eb6d8c57c54a3097463207e33e218b9a91d35) (1 finding - `FilledRelay` was emitted 1 time with an amount of 3.87 WETH relayed)
-- [0x396c794b8a41e6e365a0fc52235739c6e82751b977d3f803d622c9463713e1d9](https://etherscan.io/tx/0x396c794b8a41e6e365a0fc52235739c6e82751b977d3f803d622c9463713e1d9) (2 findings - `FilledRelay` was emitted 2 times with different parameters) -->
-
- ### Goerli Testnet (PoC)
-
 In order to verify the Proof of Concept transactions on Goerli the appropriate `jsonRpcUrl` shall be set in `./forta.config.json`
 
 - [7597753](https://goerli.etherscan.io/block/7597753) (0 findings - the reserve token balance of 110 tokens was more than the threshold of 100 tokens )
