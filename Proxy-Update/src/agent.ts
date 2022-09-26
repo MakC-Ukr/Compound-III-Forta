@@ -8,7 +8,7 @@ import {
   Initialize,
   getEthersProvider,
 } from "forta-agent";
-import { UPGRADE_EVENT_SIGNATURE } from "./utils";
+import { UPGRADE_EVENT_SIGNATURE } from "./constants";
 import { NetworkDataInterface, NM_DATA } from "./network";
 import { NetworkManager } from "forta-agent-tools";
 

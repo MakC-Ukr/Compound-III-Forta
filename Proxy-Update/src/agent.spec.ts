@@ -3,14 +3,12 @@ import {
   FindingSeverity,
   Finding,
   HandleTransaction,
-  TransactionEvent,
 } from "forta-agent";
 import {
-  MockEthersProvider,
   TestTransactionEvent,
 } from "forta-agent-tools/lib/test";
-import { UPGRADE_EVENT_SIGNATURE } from "./utils";
-import agent, { provideHandleTransaction } from "./agent";
+import { UPGRADE_EVENT_SIGNATURE } from "./constants";
+import { provideHandleTransaction } from "./agent";
 import { NetworkDataInterface } from "./network";
 import { createAddress, NetworkManager } from "forta-agent-tools";
 
@@ -46,6 +44,29 @@ function testGetFindingInstance(adr: string, _isComet: string): Finding {
 describe("Proxy Update agent", () => {
   it("returns empty findings if no Updated event is emitted", async () => {
     const txEvent: TestTransactionEvent = new TestTransactionEvent();
+    const findings: Finding[] = await handleTransaction(txEvent);
+    expect(findings).toStrictEqual([]);
+  });
+
+  it("returns empty finding if the Updated event is emitted but not from the Comet or Configurator address", async () => {
+    const txEvent: TestTransactionEvent =
+      new TestTransactionEvent().addEventLog(
+        UPGRADE_EVENT_SIGNATURE,
+        createAddress("0x32"),
+        [createAddress("0x09")]
+      );
+
+    const findings: Finding[] = await handleTransaction(txEvent);
+    expect(findings).toStrictEqual([]);
+  });
+
+  it("returns empty finding if the some other event is emitted from the Comet address", async () => {
+    const txEvent: TestTransactionEvent =
+      new TestTransactionEvent().addEventLog(
+        TEST_EVENT_SIGNATURE,
+        createAddress("0x32")
+      );
+
     const findings: Finding[] = await handleTransaction(txEvent);
     expect(findings).toStrictEqual([]);
   });
@@ -92,28 +113,5 @@ describe("Proxy Update agent", () => {
       testGetFindingInstance(createAddress("0x09"), "false"),
       testGetFindingInstance(createAddress("0x10"), "true"),
     ]);
-  });
-
-  it("returns empty finding if the Updated event is emitted but not from the Comet address", async () => {
-    const txEvent: TestTransactionEvent =
-      new TestTransactionEvent().addEventLog(
-        UPGRADE_EVENT_SIGNATURE,
-        createAddress("0x32"),
-        [createAddress("0x09")]
-      );
-
-    const findings: Finding[] = await handleTransaction(txEvent);
-    expect(findings).toStrictEqual([]);
-  });
-
-  it("returns empty finding if the some other event is eitted from the Comet address", async () => {
-    const txEvent: TestTransactionEvent =
-      new TestTransactionEvent().addEventLog(
-        TEST_EVENT_SIGNATURE,
-        createAddress("0x32")
-      );
-
-    const findings: Finding[] = await handleTransaction(txEvent);
-    expect(findings).toStrictEqual([]);
   });
 });

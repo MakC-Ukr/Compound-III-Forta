@@ -5,7 +5,7 @@ import {
   GOERLI_COMET,
   MAINNET_CONFIGURATOR,
   GOERLI_CONFIGURATOR,
-} from "./utils";
+} from "./constants";
 
 export interface NetworkDataInterface {
   cometAddr: string;
