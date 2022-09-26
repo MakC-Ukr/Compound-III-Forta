@@ -10,4 +10,5 @@ buy-collateral-reentrancy
 2. Readme complete
 
 upgrade-proxy
-metadata should retun the address of the new proxy
+1. metadata should retun the address of the new proxy
+2. Documentation complete
