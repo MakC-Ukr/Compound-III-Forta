@@ -2,7 +2,7 @@
 
 ## Summary
 
-Compound Finance's v3 of the protocol issues overcollateralized loans of a single asset (called the `baseToken`) with collateral of other assets (e.g. ETH, WBTC, LINK, UNI, COMP). The deposited collateral stays in the contract, does not earn a yield, and is not transferred anywhere else until the loan is repaid. Whenever the loan to collateral value falls below a certain ratio (the `liquidationFactor`). 
+Compound Finance's v3 of the protocol issues overcollateralized loans of a single asset (called the `baseToken`) with collateral of other assets (e.g. ETH, WBTC, LINK, UNI, COMP). The deposited collateral stays in the contract, does not earn a yield, and is not transferred anywhere else until the loan is repaid. Whenever the loan to collateral value falls below a certain ratio (the `liquidationFactor`), the user can be liquidated. 
 
 ## Proposed Bots:
 - COMP01: Base Token Reserves
