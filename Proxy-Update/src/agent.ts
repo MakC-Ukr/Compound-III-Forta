@@ -12,7 +12,7 @@ import { UPGRADE_EVENT_SIGNATURE } from "./constants";
 import { NetworkDataInterface, NM_DATA } from "./network";
 import { NetworkManager } from "forta-agent-tools";
 
-const networkManager = new NetworkManager(NM_DATA, 1);
+const networkManager = new NetworkManager(NM_DATA);
 
 export function provideInitialize(
   networkManager: NetworkManager<NetworkDataInterface>,

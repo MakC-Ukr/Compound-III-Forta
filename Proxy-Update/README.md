@@ -24,5 +24,5 @@ Types of alerts fired by this bot:
 
 In order to verify the Proof of Concept transactions on Goerli the appropriate `jsonRpcUrl` shall be set in `./forta.config.json`
 
-- [0x14a3f1e07e037d49db44b4cac7eba83df4a7ae3e2cb903623c8b719bb2b7b3a3](https://goerli.etherscan.io/tx/0x14a3f1e07e037d49db44b4cac7eba83df4a7ae3e2cb903623c8b719bb2b7b3a3)  (1 finding - the `Comet` contract was upgraded)
-- [0x163e08ee3a3d4a78fc67ea9368bbe073fbc4b55abd0da24b6b0c96a0a145e501](https://goerli.etherscan.io/tx/0x163e08ee3a3d4a78fc67ea9368bbe073fbc4b55abd0da24b6b0c96a0a145e501) (1 finding - the `Configurator` contract was upgraded)
+- [0xcad4404cfcc3368487f616257e94dc083d5c475e872fd4085a2c2062fdcc1ba1](https://goerli.etherscan.io/tx/0xcad4404cfcc3368487f616257e94dc083d5c475e872fd4085a2c2062fdcc1ba1)  (1 finding - the `Comet` contract was upgraded)
+- [0xfdfcf5a405a176d13b765e1c0b9ab716b46e928bda10000c04b83f5ab8f4cd1c](https://goerli.etherscan.io/tx/0xfdfcf5a405a176d13b765e1c0b9ab716b46e928bda10000c04b83f5ab8f4cd1c) (1 finding - the `Configurator` contract was upgraded)

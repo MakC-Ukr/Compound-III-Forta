@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 contract Configurator {
-    event Updated(address);
+    event Upgraded(address);
 
     function upgrade() public{
-        emit Updated(address(0));
+        emit Upgraded(address(0));
     }
 }
 
