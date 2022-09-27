@@ -1,7 +1,7 @@
 {
   "name": "buy-collateral-reentrancy",
   "version": "0.0.1",
-  "description": "Forta Agent Typescript starter project",
+  "description": "Forta bot that monitors for multiple reentrancies in the buyCollateral funciton of the Comet contract",
   "chainIds": [
     1
   ],
