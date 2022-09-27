@@ -20,5 +20,5 @@ This bot monitors for the amount of base token reserves stored in the [Compound]
 
 In order to verify the Proof of Concept transactions on Goerli the appropriate `jsonRpcUrl` shall be set in `./forta.config.json`
 
-- [7597753](https://goerli.etherscan.io/block/7597753) (0 findings - the reserve token balance of 110 tokens was more than the threshold of 100 tokens )
-- [7597722](https://goerli.etherscan.io/block/7597722) (1 finding - the reserve token balance of 90 tokens was less than the threshold of 100 tokens )
+- [7667240](https://goerli.etherscan.io/block/7597753) (0 findings - the reserve token balance of 110 tokens was more than the threshold of 100 tokens )
+- [7667260](https://goerli.etherscan.io/block/7667260) (1 finding - the reserve token balance of 90 tokens was less than the threshold of 100 tokens )

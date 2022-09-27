@@ -18,9 +18,8 @@ export function provideHandleBlock(
   networkManager: NetworkManager<NetworkDataInterface>,
   provider: ethers.providers.Provider
 ): HandleBlock {
-  console.log(networkManager.get("cometAddr"));
-  let cometContract = new ethers.Contract(networkManager.get("cometAddr"), COMET_ABI, provider);
   return async (blockEvent: BlockEvent) => {
+    let cometContract = new ethers.Contract(networkManager.get("cometAddr"), COMET_ABI, provider);
     const findings: Finding[] = [];
     const tokenReserves: BigNumber = BigNumber.from(
       await cometContract.getReserves({ blockTag: blockEvent.blockNumber })
